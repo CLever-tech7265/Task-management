@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using TaskManagement.modules;
 namespace TaskManagement.Data{
-    class TaskDbContext:DbContext{
+    public class TaskDbContext:DbContext{
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Manager> Manager { get; set; }
         public DbSet<Shift> Shifts { get; set; }
@@ -15,7 +15,7 @@ namespace TaskManagement.Data{
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
-            optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Chani,7265;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Nagel,6629;MultipleActiveResultSets=true;TrustServerCertificate=True;");
         }
     }
 }
