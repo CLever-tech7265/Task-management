@@ -5,10 +5,11 @@
 ## https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 ## has more thorough IDE-specific entries.
 ##
-## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
+## Get latest from https://github.com/github/gitiggit nore/blob/main/Dotnet.gitignore
+#npm
+node_modules/
 
 # Build results
-/node_modules
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
