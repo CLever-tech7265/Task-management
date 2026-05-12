@@ -8,6 +8,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 
 # Build results
+/node_modules
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -27,7 +28,7 @@ bld/
 project.lock.json
 project.fragment.lock.json
 artifacts/
-/node_modules
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
