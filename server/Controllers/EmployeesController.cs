@@ -19,5 +19,48 @@ namespace TaskManagement.Controllers{
         {
              return await _context.Employees.Skip(skip).Take(take).ToListAsync();
         }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Employee>>> SearchEmployee(
+            string? firsName,
+            string? lastName
+        )
+        {
+              if (string.IsNullOrWhiteSpace(firsName)||string.IsNullOrWhiteSpace(lastName))
+            {
+                return BadRequest("First name and last name query parameter is required.");
+            }
+
+            return await _context
+                 .Employees.Where(a => 
+                a.FirstName != null && a.FirstName.Contains(firsName.Trim())
+               && a.LastName != null && a.LastName.Contains(lastName.Trim()))
+                
+                .ToListAsync();
+        }
+
+        
+        [HttpPost]
+        public async Task<ActionResult<IEnumerable<Employee>>> CreateEmployee(Employee employee)
+        {
+            if (string.IsNullOrWhiteSpace(employee.FirstName)||string.IsNullOrWhiteSpace(employee.LastName))
+            {
+                return BadRequest("Empoyee name is required.");
+            }
+            if (
+                _context.Employees.Any(a =>
+                    a.PeopleId != null && a.PeopleId == employee.PeopleId
+                )
+            )
+            {
+                return Conflict("An employee with the same id already exists.");
+            }
+            
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetEmployees), new { id = employee.Id }, employee);
+        }
+
     }
 }
