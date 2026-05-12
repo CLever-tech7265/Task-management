@@ -3,9 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using TaskManagement.modules;
 namespace TaskManagement.Data{
-    class TaskDbContext:DbContext{
+    public class TaskDbContext:DbContext{
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<Manager> Manager { get; set; }
         public DbSet<Shift> Shifts { get; set; }
         public DbSet<Specialization> Specialization { get; set; }
          public DbSet<Level> EmployeeLevel { get; set; }
