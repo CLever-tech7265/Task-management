@@ -14,7 +14,7 @@ namespace TaskManagement.Data{
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
-            optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Chani,7265;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Nagel,6629;MultipleActiveResultSets=true;TrustServerCertificate=True;");
         }
     }
 }
