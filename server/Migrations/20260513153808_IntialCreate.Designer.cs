@@ -12,8 +12,8 @@ using TaskManagement.Data;
 namespace TaskManagement.Migrations
 {
     [DbContext(typeof(TaskDbContext))]
-    [Migration("20260512132651_InitialCreat")]
-    partial class InitialCreat
+    [Migration("20260513153808_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,8 +27,8 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("EmployeeSpecialization", b =>
                 {
-                    b.Property<int>("SpecId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SpecId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("employeesId")
                         .HasColumnType("uniqueidentifier");
@@ -42,11 +42,11 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("ShiftSpecialization", b =>
                 {
-                    b.Property<int>("SpecsId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SpecsId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("shiftId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("shiftId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("SpecsId", "shiftId");
 
@@ -107,11 +107,9 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("TaskManagement.modules.Shift", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FinishHour")
                         .IsRequired()
@@ -128,11 +126,9 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("TaskManagement.modules.Specialization", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Spec")
                         .IsRequired()

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreat : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,8 +27,7 @@ namespace TaskManagement.Migrations
                 name: "Shifts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StartHour = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FinishHour = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -41,8 +40,7 @@ namespace TaskManagement.Migrations
                 name: "Specialization",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Spec = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -77,8 +75,8 @@ namespace TaskManagement.Migrations
                 name: "ShiftSpecialization",
                 columns: table => new
                 {
-                    SpecsId = table.Column<int>(type: "int", nullable: false),
-                    shiftId = table.Column<int>(type: "int", nullable: false)
+                    SpecsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    shiftId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,7 +99,7 @@ namespace TaskManagement.Migrations
                 name: "EmployeeSpecialization",
                 columns: table => new
                 {
-                    SpecId = table.Column<int>(type: "int", nullable: false),
+                    SpecId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     employeesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
