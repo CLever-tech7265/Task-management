@@ -10,13 +10,17 @@ namespace TaskManagement.modules{
         public string EmployeeLevel { get; set; }="";
        // public List<Employee> Employees { get; set; }
     }
-    public class Employee:People{
+    public class Employee{
        
       public Guid Id { get; set; }
-    public Specialization Spec { get; set; }
+      public string FirstName { get; set; }="";
+      public string LastName { get; set; }="";
+      public string PeopleId { get; set; }="";
+      public DateTime BirthDate { get; set; }
+      public string Email { get; set; }="";
+    public List<Specialization> Spec { get; set; }=[];
     [ForeignKey("Level")]
     public Level IdOfLevel { get; set; }
-    public Manager Manager{get; set;}
     }
-
+ 
 }

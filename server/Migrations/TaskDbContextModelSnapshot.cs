@@ -22,6 +22,36 @@ namespace TaskManagement.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EmployeeSpecialization", b =>
+                {
+                    b.Property<Guid>("SpecId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("employeesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SpecId", "employeesId");
+
+                    b.HasIndex("employeesId");
+
+                    b.ToTable("EmployeeSpecialization");
+                });
+
+            modelBuilder.Entity("ShiftSpecialization", b =>
+                {
+                    b.Property<Guid>("SpecsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("shiftId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SpecsId", "shiftId");
+
+                    b.HasIndex("shiftId");
+
+                    b.ToTable("ShiftSpecialization");
+                });
+
             modelBuilder.Entity("TaskManagement.modules.Employee", b =>
                 {
                     b.Property<Guid>("Id")
@@ -46,23 +76,13 @@ namespace TaskManagement.Migrations
                     b.Property<Guid>("Level")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("PeopleId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SpecId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Level");
-
-                    b.HasIndex("ManagerId");
-
-                    b.HasIndex("SpecId");
 
                     b.ToTable("Employees");
                 });
@@ -82,45 +102,11 @@ namespace TaskManagement.Migrations
                     b.ToTable("EmployeeLevel");
                 });
 
-            modelBuilder.Entity("TaskManagement.modules.Manager", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PeopleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Manager");
-                });
-
             modelBuilder.Entity("TaskManagement.modules.Shift", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FinishHour")
                         .IsRequired()
@@ -137,14 +123,9 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("TaskManagement.modules.Specialization", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ShiftId")
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Spec")
                         .IsRequired()
@@ -152,9 +133,37 @@ namespace TaskManagement.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ShiftId");
-
                     b.ToTable("Specialization");
+                });
+
+            modelBuilder.Entity("EmployeeSpecialization", b =>
+                {
+                    b.HasOne("TaskManagement.modules.Specialization", null)
+                        .WithMany()
+                        .HasForeignKey("SpecId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskManagement.modules.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("employeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShiftSpecialization", b =>
+                {
+                    b.HasOne("TaskManagement.modules.Specialization", null)
+                        .WithMany()
+                        .HasForeignKey("SpecsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskManagement.modules.Shift", null)
+                        .WithMany()
+                        .HasForeignKey("shiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TaskManagement.modules.Employee", b =>
@@ -165,35 +174,7 @@ namespace TaskManagement.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskManagement.modules.Manager", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TaskManagement.modules.Specialization", "Spec")
-                        .WithMany()
-                        .HasForeignKey("SpecId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("IdOfLevel");
-
-                    b.Navigation("Manager");
-
-                    b.Navigation("Spec");
-                });
-
-            modelBuilder.Entity("TaskManagement.modules.Specialization", b =>
-                {
-                    b.HasOne("TaskManagement.modules.Shift", null)
-                        .WithMany("Specs")
-                        .HasForeignKey("ShiftId");
-                });
-
-            modelBuilder.Entity("TaskManagement.modules.Shift", b =>
-                {
-                    b.Navigation("Specs");
                 });
 #pragma warning restore 612, 618
         }
