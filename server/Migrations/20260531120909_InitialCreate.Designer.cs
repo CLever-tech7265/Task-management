@@ -12,8 +12,8 @@ using TaskManagement.Data;
 namespace TaskManagement.Migrations
 {
     [DbContext(typeof(TaskDbContext))]
-    [Migration("20260513153808_IntialCreate")]
-    partial class IntialCreate
+    [Migration("20260531120909_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,30 +27,30 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("EmployeeSpecialization", b =>
                 {
-                    b.Property<Guid>("SpecId")
+                    b.Property<Guid>("EmployeesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("employeesId")
+                    b.Property<Guid>("SpecsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("SpecId", "employeesId");
+                    b.HasKey("EmployeesId", "SpecsId");
 
-                    b.HasIndex("employeesId");
+                    b.HasIndex("SpecsId");
 
                     b.ToTable("EmployeeSpecialization");
                 });
 
             modelBuilder.Entity("ShiftSpecialization", b =>
                 {
+                    b.Property<Guid>("ShiftsId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("SpecsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("shiftId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasKey("ShiftsId", "SpecsId");
 
-                    b.HasKey("SpecsId", "shiftId");
-
-                    b.HasIndex("shiftId");
+                    b.HasIndex("SpecsId");
 
                     b.ToTable("ShiftSpecialization");
                 });
@@ -76,7 +76,7 @@ namespace TaskManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("Level")
+                    b.Property<Guid>("LevelId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PeopleId")
@@ -85,7 +85,7 @@ namespace TaskManagement.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Level");
+                    b.HasIndex("LevelId");
 
                     b.ToTable("Employees");
                 });
@@ -141,43 +141,48 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("EmployeeSpecialization", b =>
                 {
-                    b.HasOne("TaskManagement.modules.Specialization", null)
+                    b.HasOne("TaskManagement.modules.Employee", null)
                         .WithMany()
-                        .HasForeignKey("SpecId")
+                        .HasForeignKey("EmployeesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskManagement.modules.Employee", null)
+                    b.HasOne("TaskManagement.modules.Specialization", null)
                         .WithMany()
-                        .HasForeignKey("employeesId")
+                        .HasForeignKey("SpecsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("ShiftSpecialization", b =>
                 {
-                    b.HasOne("TaskManagement.modules.Specialization", null)
+                    b.HasOne("TaskManagement.modules.Shift", null)
                         .WithMany()
-                        .HasForeignKey("SpecsId")
+                        .HasForeignKey("ShiftsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskManagement.modules.Shift", null)
+                    b.HasOne("TaskManagement.modules.Specialization", null)
                         .WithMany()
-                        .HasForeignKey("shiftId")
+                        .HasForeignKey("SpecsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("TaskManagement.modules.Employee", b =>
                 {
-                    b.HasOne("TaskManagement.modules.Level", "IdOfLevel")
-                        .WithMany()
-                        .HasForeignKey("Level")
+                    b.HasOne("TaskManagement.modules.Level", "Level")
+                        .WithMany("Employees")
+                        .HasForeignKey("LevelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("IdOfLevel");
+                    b.Navigation("Level");
+                });
+
+            modelBuilder.Entity("TaskManagement.modules.Level", b =>
+                {
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

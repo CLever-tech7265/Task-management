@@ -4,6 +4,18 @@ using Microsoft.Extensions.Configuration.Json;
 using TaskManagement.modules;
 namespace TaskManagement.Data{
     public class TaskDbContext:DbContext{
+      
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<Employee>()
+        .HasOne(e => e.Level)
+        .WithMany(l => l.Employees)
+        .HasForeignKey(e => e.LevelId);
+
+    modelBuilder.Entity<Employee>()
+        .HasMany(e => e.Specs)
+        .WithMany(s => s.Employees);
+}
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Shift> Shifts { get; set; }
         public DbSet<Specialization> Specialization { get; set; }
@@ -14,11 +26,7 @@ namespace TaskManagement.Data{
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
-<<<<<<< HEAD
             optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Miri,96629;MultipleActiveResultSets=true;TrustServerCertificate=True;");
-=======
-            optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Chani,7265;MultipleActiveResultSets=true;TrustServerCertificate=True;");
->>>>>>> d57d76d7f2609d70cd1b1e9a5263ec17377099a2
         }
     }
 }

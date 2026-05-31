@@ -59,64 +59,142 @@ namespace TaskManagement.Controllers{
 
         
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<Employee>>> CreateEmployee(Employee employee)
+        public async Task<ActionResult<IEnumerable<EmployeeDto>>> CreateEmployee(EmployeeDto employeeDto)
         {
-            if (string.IsNullOrWhiteSpace(employee.FirstName)||string.IsNullOrWhiteSpace(employee.LastName))
+
+
+//             if(employeeDto.Specs != null && employeeDto.Specs.Any())
+// {
+//     employee.Specs = employeeDto.Specs.Select(s => new Specialization { Id = s.Id, Name = s.Name }).ToList();
+// }
+// else
+// {
+//     employee.Specs = new List<Specialization>(); // או השאר null אם השתמשת ב־List<Specialization>?
+// }
+            if (string.IsNullOrWhiteSpace(employeeDto.FirstName)||string.IsNullOrWhiteSpace(employeeDto.LastName))
             {
-                return BadRequest("Empoyee name is required.");
+                return BadRequest("Employee name is required miri.");
             }
             if (
-                _context.Employees.Any(a =>
-                    a.PeopleId != null && a.PeopleId == employee.PeopleId
+                await _context.Employees.AnyAsync(a =>
+                    a.PeopleId != null && a.PeopleId == employeeDto.PeopleId
                 )
             )
             {
                 return Conflict("An employee with the same id already exists.");
             }
+            var level=new Level{
+                    Id=Guid.NewGuid(),
+                    EmployeeLevel="Normal"
+            };
+
+         
+
+             var employee=new Employee
+            {
+                Id=Guid.NewGuid(),
+                FirstName = employeeDto.FirstName.Trim(),
+                LastName = employeeDto.LastName.Trim(),
+                PeopleId = employeeDto.PeopleId.Trim(),
+                BirthDate = employeeDto.BirthDate,
+                Email = employeeDto.Email.Trim(),
+                Specs = new List<Specialization> {},
+                
             
+            };
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(SearchEmployeeId), new { id = employee.PeopleId }, employee);
+            return CreatedAtAction(nameof(SearchEmployeeId), employee);
         }
 
 
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Employee>> UpdateEmployee(string id, Employee emp)
-        {
-            if (id != emp.PeopleId)
-            {
-                return BadRequest();
-            }
+        // [HttpPut("{id}")]
+        // public async Task<ActionResult<EmployeeDto>> UpdateEmployee(string id, EmployeeDto emp)
+        // {
+        //     if (id != emp.PeopleId)
+        //     {
+        //         return BadRequest();
+        //     }
 
-            if (!EmployeeExists(id))
-            {
-                return NotFound();
-            }
+        //     if (!EmployeeExists(id))
+        //     {
+        //         return NotFound();
+        //     }
 
-            var employeeEntity = await _context.Employees.FindAsync(id);
-            employeeEntity.PeopleId = emp.PeopleId;
+        //     var employeeEntity = await _context.Employees.FindAsync(id);
+        //     employeeEntity.PeopleId = emp.PeopleId;
 
-            _context.Entry(employeeEntity).State = EntityState.Modified;
+        //     _context.Entry(employeeEntity).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-            return NoContent();
-        }
+        //     try
+        //     {
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     catch (DbUpdateConcurrencyException)
+        //     {
+        //         throw;
+        //     }
+        //     return NoContent();
+        // }
 
+
+[HttpPut("{id}")]
+public async Task<IActionResult> UpdateEmployee(string id, EmployeeDto emp)
+{
+    // if (!Guid.TryParse(id, out var guidId))
+    //     return BadRequest("Invalid employee id.");
+
+    var employee = await _context.Employees
+        .Include(e => e.Specs)
+        .Include(e => e.Level)
+        .FirstOrDefaultAsync(e => e.PeopleId == id);
+
+    if (employee == null)
+        return NotFound();
+
+    // עדכון שדות בסיסיים
+    employee.FirstName = emp.FirstName?.Trim();
+    employee.LastName = emp.LastName?.Trim();
+    employee.PeopleId = emp.PeopleId?.Trim();
+    employee.Email = emp.Email?.Trim();
+    employee.BirthDate = emp.BirthDate;
+
+    // עדכון Level (אם נשלח חדש)
+    // if (emp.LevelId != Guid.Empty)
+    // {
+    //     var levelExists = await _context.EmployeeLevels
+    //         .AnyAsync(l => l.Id == emp.LevelId);
+
+    //     if (!levelExists)
+    //         return BadRequest("Level not found.");
+
+    //     employee.LevelId = emp.LevelId;
+    // }
+
+    // עדכון Specs (אם נשלח)
+    // if (emp.Specs != null)
+    // {
+    //     employee.Specs.Clear();
+
+    //     var specs = await _context.Specializations
+    //         .Where(s => emp.Specs.Select(x => x.Id).Contains(s.Id))
+    //         .ToListAsync();
+
+    //     employee.Specs = specs;
+    // }
+
+    await _context.SaveChangesAsync();
+
+    return Ok(employee);
+}
 
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEmployee(Guid id)
+        public async Task<IActionResult> DeleteEmployee(string id)
         {
-            var emp = await _context.Employees.FindAsync(id);
+            var emp = await _context.Employees.FirstOrDefaultAsync(e => e.PeopleId == id);
             if (emp == null)
             {
                 return NotFound();
@@ -125,7 +203,7 @@ namespace TaskManagement.Controllers{
            _context.Employees.Remove(emp);
             await _context.SaveChangesAsync(); 
            
-            return NoContent();
+            return Ok(emp);
         }
 
         private bool EmployeeExists(string id)
