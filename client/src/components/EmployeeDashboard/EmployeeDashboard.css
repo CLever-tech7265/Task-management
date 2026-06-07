@@ -1,0 +1,11 @@
+.employee-container {
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+}
+
+.employee-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}

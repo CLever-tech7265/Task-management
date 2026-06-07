@@ -1,0 +1,39 @@
+.manager-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle, #0f172a, #020617);
+}
+
+.manager-card {
+  width: 450px;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.manager-card h1 {
+  text-align: center;
+  color: #111827;
+}
+
+.manager-card button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.manager-card button:hover {
+  background: #1d4ed8;
+  transform: scale(1.03);
+}

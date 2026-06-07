@@ -1,94 +1,155 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Login.css';
 
-import { useDispatch } from 'react-redux';
-import type { AppDispatch } from '../../store/store';
-import { setUser } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../../store/store';
 
-import { useNavigate } from 'react-router-dom';
+import { setUser } from '../../store/userSlice';
+
+import { data, useNavigate } from 'react-router-dom';
 
 interface FormData {
-  firstName: string;
-  lastName;
-  identity: string;
-  birthDate: string;
-  email: string;
+  userName: string;
+  password: string;
 }
 
 const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+
   const navigate = useNavigate();
+ const isAuthenticated = useSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
+  const role = useSelector(
+    (state: RootState) => state.user.role
+  );
+  // נווט אוטומטית אם המשתמש כבר מחובר
+  useEffect(() => {
+    console.log(isAuthenticated);
+    
+    if (isAuthenticated) {
+      if (role === 'Manager') {
+         navigate('/manager');
+      } else {
+         navigate('/employee');
+      }
+    }
+    
+  }, [isAuthenticated, role, navigate]);
+  
 
   const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    identity: '',
-    birthDate: '',
-    email: ''
+   userName:'',
+   password:''
   });
 
-  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [errors, setErrors] =
+    useState<Partial<FormData>>({});
 
   const validate = () => {
-    const newErrors: Partial<FormData> = {};
+  const newErrors: Partial<FormData> = {};
 
-    if (formData.firstName.trim().length < 2)
-      newErrors.firstName = 'שם פרטי חייב להכיל לפחות 2 תווים';
+  if (formData.userName.trim().length < 3) {
+    newErrors.userName = 'שם משתמש קצר מדי';
+  }
 
-    if (formData.lastName.trim().length < 2)
-      newErrors.lastName = 'שם משפחה חייב להכיל לפחות 2 תווים';
+  if (formData.password.trim().length < 4) {
+    newErrors.password = 'סיסמה חייבת להיות לפחות 4 תווים';
+  }
 
-    if (!/^\d{9}$/.test(formData.identity))
-      newErrors.identity = 'תעודת זהות חייבת להכיל 9 ספרות';
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
 
-    if (!formData.birthDate)
-      newErrors.birthDate = 'יש לבחור תאריך לידה';
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      newErrors.email = 'אימייל לא תקין';
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (validate()) {
-      dispatch(
-        setUser({
-          ...formData,
-          isAuthenticated: true
-        })
-      );
+  if (!validate()) return;
 
-      navigate('/requirements'); // ✔️ מעבר עם Router
+  try {
+    const response = await fetch('http://localhost:5063/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userName: formData.userName,
+        password: formData.password
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Login failed');
     }
-  };
+
+    const data = await response.json();
+
+    dispatch(setUser({
+      firstName: '',
+      lastName: '',
+      identity: '',
+      birthDate: '',
+      email: '',
+      isAuthenticated: true,
+      shifts: [],
+      role: data.role,
+      token: data.token
+    }));
+
+    if (data.role === 'Manager') {
+      navigate('/manager');
+    } else {
+      navigate('/employee/setup');
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert('Login failed');
+  }
+};
 
   return (
     <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
+
+      <form
+        className="login-form"
+        onSubmit={handleSubmit}
+      >
+
         <h1>התחברות למערכת</h1>
 
-        <input name="firstName" onChange={handleChange} />
-        <input name="lastName" onChange={handleChange} />
-        <input name="identity" onChange={handleChange} />
-        <input type="date" name="birthDate" onChange={handleChange} />
-        <input type="email" name="email" onChange={handleChange} />
+       <input
+  type="text"
+  name="userName"
+  placeholder="שם משתמש"
+  onChange={handleChange}
+/>
+
+<input
+  type="password"
+  name="password"
+  placeholder="סיסמה"
+  onChange={handleChange}
+/>
+
+        
 
         <button type="submit">
           כניסה
         </button>
+
       </form>
+
     </div>
   );
 };

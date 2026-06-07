@@ -1,0 +1,53 @@
+.setup-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  font-family: Arial, sans-serif;
+}
+
+.setup-card {
+  width: 380px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setup-card h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+.setup-card input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  transition: 0.3s;
+}
+
+.setup-card input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px #3b82f6;
+}
+
+.setup-card button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.setup-card button:hover {
+  background: #2563eb;
+}

@@ -10,6 +10,7 @@
     "ajv": "^6.14.0",
     "ansi-styles": "^4.3.0",
     "argparse": "^2.0.1",
+    "axios": "^1.16.1",
     "balanced-match": "^1.0.2",
     "baseline-browser-mapping": "^2.10.20",
     "brace-expansion": "^1.1.14",
@@ -69,7 +70,7 @@
     "keyv": "^4.5.4",
     "levn": "^0.4.1",
     "lightningcss": "^1.32.0",
-    "lightningcss-win32-x64-msvc": "^1.32.0",
+
     "locate-path": "^6.0.0",
     "lodash.merge": "^4.6.2",
     "lru-cache": "^5.1.1",
@@ -93,6 +94,7 @@
     "react-dom": "^19.2.6",
     "react-redux": "^9.3.0",
     "react-router-dom": "^7.15.1",
+    "redux-persist": "^6.0.0",
     "resolve-from": "^4.0.0",
     "rolldown": "^1.0.0-rc.15",
     "scheduler": "^0.27.0",
@@ -133,4 +135,6 @@
     "@vitejs/plugin-react": "^6.0.2",
     "typescript": "^6.0.3"
   }
+  
+
 }

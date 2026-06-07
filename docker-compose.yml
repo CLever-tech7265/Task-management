@@ -1,0 +1,19 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1

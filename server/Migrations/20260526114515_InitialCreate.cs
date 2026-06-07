@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,15 +75,15 @@ namespace TaskManagement.Migrations
                 name: "ShiftSpecialization",
                 columns: table => new
                 {
-                    SpecsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    shiftId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ShiftsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SpecsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShiftSpecialization", x => new { x.SpecsId, x.shiftId });
+                    table.PrimaryKey("PK_ShiftSpecialization", x => new { x.ShiftsId, x.SpecsId });
                     table.ForeignKey(
-                        name: "FK_ShiftSpecialization_Shifts_shiftId",
-                        column: x => x.shiftId,
+                        name: "FK_ShiftSpecialization_Shifts_ShiftsId",
+                        column: x => x.ShiftsId,
                         principalTable: "Shifts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -99,15 +99,15 @@ namespace TaskManagement.Migrations
                 name: "EmployeeSpecialization",
                 columns: table => new
                 {
-                    SpecId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    employeesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    EmployeesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SpecId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeSpecialization", x => new { x.SpecId, x.employeesId });
+                    table.PrimaryKey("PK_EmployeeSpecialization", x => new { x.EmployeesId, x.SpecId });
                     table.ForeignKey(
-                        name: "FK_EmployeeSpecialization_Employees_employeesId",
-                        column: x => x.employeesId,
+                        name: "FK_EmployeeSpecialization_Employees_EmployeesId",
+                        column: x => x.EmployeesId,
                         principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -125,14 +125,14 @@ namespace TaskManagement.Migrations
                 column: "Level");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeSpecialization_employeesId",
+                name: "IX_EmployeeSpecialization_SpecId",
                 table: "EmployeeSpecialization",
-                column: "employeesId");
+                column: "SpecId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShiftSpecialization_shiftId",
+                name: "IX_ShiftSpecialization_SpecsId",
                 table: "ShiftSpecialization",
-                column: "shiftId");
+                column: "SpecsId");
         }
 
         /// <inheritdoc />

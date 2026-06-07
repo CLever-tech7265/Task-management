@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskManagement.Data;
 
@@ -11,9 +12,11 @@ using TaskManagement.Data;
 namespace TaskManagement.Migrations
 {
     [DbContext(typeof(TaskDbContext))]
-    partial class TaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260607121146_Availability")]
+    partial class Availability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,12 +87,22 @@ namespace TaskManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ShiftId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ShiftId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LevelId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.HasIndex("ShiftId1");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -284,6 +297,14 @@ namespace TaskManagement.Migrations
                         .WithMany("Employees")
                         .HasForeignKey("LevelId");
 
+                    b.HasOne("TaskManagement.modules.Shift", null)
+                        .WithMany("Availability")
+                        .HasForeignKey("ShiftId");
+
+                    b.HasOne("TaskManagement.modules.Shift", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("ShiftId1");
+
                     b.HasOne("TaskManagement.modules.User", "User")
                         .WithOne("Employee")
                         .HasForeignKey("TaskManagement.modules.Employee", "UserId")
@@ -298,13 +319,13 @@ namespace TaskManagement.Migrations
             modelBuilder.Entity("TaskManagement.modules.EmployeeAssignedShift", b =>
                 {
                     b.HasOne("TaskManagement.modules.Employee", "Employee")
-                        .WithMany("AssignedEmployees")
+                        .WithMany("Shifts")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TaskManagement.modules.Shift", "Shift")
-                        .WithMany("AssignedEmployees")
+                        .WithMany()
                         .HasForeignKey("ShiftId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -317,13 +338,13 @@ namespace TaskManagement.Migrations
             modelBuilder.Entity("TaskManagement.modules.EmployeeShiftPreference", b =>
                 {
                     b.HasOne("TaskManagement.modules.Employee", "Employee")
-                        .WithMany("PreferredEmployees")
+                        .WithMany("Availability")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TaskManagement.modules.Shift", "Shift")
-                        .WithMany("PreferredEmployees")
+                        .WithMany()
                         .HasForeignKey("ShiftId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -354,9 +375,9 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("TaskManagement.modules.Employee", b =>
                 {
-                    b.Navigation("AssignedEmployees");
+                    b.Navigation("Availability");
 
-                    b.Navigation("PreferredEmployees");
+                    b.Navigation("Shifts");
                 });
 
             modelBuilder.Entity("TaskManagement.modules.Level", b =>
@@ -366,9 +387,9 @@ namespace TaskManagement.Migrations
 
             modelBuilder.Entity("TaskManagement.modules.Shift", b =>
                 {
-                    b.Navigation("AssignedEmployees");
+                    b.Navigation("Availability");
 
-                    b.Navigation("PreferredEmployees");
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("TaskManagement.modules.User", b =>

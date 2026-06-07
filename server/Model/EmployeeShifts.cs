@@ -1,0 +1,24 @@
+namespace TaskManagement.modules
+{
+    public class EmployeeShiftPreference
+{
+    public Guid Id { get; set; }
+
+    public Guid EmployeeId { get; set; }
+    public Employee Employee { get; set; }
+
+    public Guid ShiftId { get; set; }
+    public Shift Shift { get; set; }
+}
+
+public class EmployeeAssignedShift
+{
+    public Guid Id { get; set; }
+
+    public Guid EmployeeId { get; set; }
+    public Employee Employee { get; set; }
+
+    public Guid ShiftId { get; set; }
+    public Shift Shift { get; set; }
+}
+}

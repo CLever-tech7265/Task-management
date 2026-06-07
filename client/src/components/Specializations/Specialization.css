@@ -1,0 +1,74 @@
+.requirements-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+  font-family: Arial;
+}
+
+.requirements-card {
+  width: 900px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.form-row input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.form-row button {
+  padding: 10px 20px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.form-row button:hover {
+  background: #0056b3;
+}
+
+.availability-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.availability-table th,
+.availability-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+button {
+  margin: 3px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.delete {
+  background: #dc3545;
+  color: white;
+}
