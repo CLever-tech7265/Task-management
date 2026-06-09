@@ -9,13 +9,13 @@ RUN dotnet restore
 COPY . .
 
 RUN dotnet publish -c Release -o /app/publish
-
+# RUN dotnet publish -c Release -o /app/publish && ls -la /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview
 
 WORKDIR /app
 
 COPY --from=build /app/publish .
 
-EXPOSE 5000
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "TaskManagement.dll"]

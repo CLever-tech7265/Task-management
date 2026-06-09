@@ -66,6 +66,8 @@ builder.Services.AddCors(options =>
                 "http://localhost:5174");
     });
 });
+// builder.WebHost.UseUrls("http://+:8080");
+
 var app = builder.Build();
 
 
@@ -88,7 +90,6 @@ if (app.Environment.IsDevelopment())
 }
 app.UseRouting();
 app.UseCors();
-
 //app.UseHttpsRedirection();
 
 app.UseAuthentication();

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Data;
@@ -5,6 +6,7 @@ using TaskManagement.modules;
 
 namespace TaskManagement.Controllers
 {
+[Authorize(Roles = "Manager")]
     [ApiController]
     [Route("api/task")]
     public class TaskController : ControllerBase
@@ -48,6 +50,7 @@ namespace TaskManagement.Controllers
         [HttpPost]
         public async Task<ActionResult<TaskManagement.modules.Task>> CreateTask(TaskDto taskDto)
         {
+            try{
             if (string.IsNullOrWhiteSpace(taskDto.Name))
             {
                 return BadRequest("Name is required");
@@ -68,6 +71,11 @@ namespace TaskManagement.Controllers
                 nameof(GetTask),
                 new { id = task.Id },
                 task);
+        }
+        catch (Exception ex)
+{
+    return StatusCode(500, ex.Message);
+}
         }
 
         [HttpPut("{id}")]

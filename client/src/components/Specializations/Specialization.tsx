@@ -1,7 +1,9 @@
-// Specialization.tsx
+// SpecializationRedux.tsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import './Specialization.css';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
+import axios from 'axios';
 
 interface Specialization {
   id: string;
@@ -10,38 +12,68 @@ interface Specialization {
 
 const API = 'http://localhost:5063/api/specialization';
 
-const Specialization: React.FC = () => {
+const SpecializationRedux: React.FC = () => {
+  const token = useSelector((state: RootState) => state.user.token);
   const [list, setList] = useState<Specialization[]>([]);
   const [name, setName] = useState('');
   const [editId, setEditId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const axiosInstance = axios.create({
+    baseURL: API,
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+
+  // מוסיף אוטומטית Authorization לכל בקשה
+  axiosInstance.interceptors.request.use((config) => {
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
 
   const load = async () => {
+    setLoading(true);
+    setError(null);
+
+    if (!token) {
+      setError('Missing token');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await axios.get(API);
+      const res = await axiosInstance.get<Specialization[]>('');
       setList(res.data);
-    } catch (err) {
-      console.error('Error loading data:', err);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to load specializations');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     load();
-  }, []);
+  }, [token]);
 
   const handleSubmit = async () => {
     if (!name.trim()) return;
+    setError(null);
 
     try {
       if (editId) {
-        await axios.put(`${API}/${editId}`, { name });
+        await axiosInstance.put(`/${editId}`, { name });
       } else {
-        await axios.post(API, { name });
+        await axiosInstance.post('', { name });
       }
       setName('');
       setEditId(null);
       load();
-    } catch (err) {
-      console.error('Error submitting:', err);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to submit specialization');
     }
   };
 
@@ -51,11 +83,12 @@ const Specialization: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
+    setError(null);
     try {
-      await axios.delete(`${API}/${id}`);
+      await axiosInstance.delete(`/${id}`);
       load();
-    } catch (err) {
-      console.error('Error deleting:', err);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to delete specialization');
     }
   };
 
@@ -75,6 +108,9 @@ const Specialization: React.FC = () => {
         </button>
       </div>
 
+      {loading && <div>Loading...</div>}
+      {error && <div className="error">{error}</div>}
+
       <table className="spec-table">
         <thead>
           <tr>
@@ -88,7 +124,9 @@ const Specialization: React.FC = () => {
               <td>{item.name}</td>
               <td>
                 <button onClick={() => handleEdit(item)}>ערוך</button>
-                <button className="delete" onClick={() => handleDelete(item.id)}>מחק</button>
+                <button className="delete" onClick={() => handleDelete(item.id)}>
+                  מחק
+                </button>
               </td>
             </tr>
           ))}
@@ -98,4 +136,4 @@ const Specialization: React.FC = () => {
   );
 };
 
-export default Specialization;
+export default SpecializationRedux;

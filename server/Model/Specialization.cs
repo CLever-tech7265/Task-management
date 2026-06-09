@@ -4,7 +4,7 @@ namespace TaskManagement.modules{
         
         public Guid Id { get; set; }
         public string Name { get; set; }="";
-        public string Discription {get;set;}
+        public string Discription {get;set;}="";
         public List<Shift> Shifts {get;set;}=[];
         public List<Employee> Employees {get;set;}=[];
     }

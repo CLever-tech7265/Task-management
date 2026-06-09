@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Data;
@@ -5,6 +6,8 @@ using TaskManagement.modules;
 
 namespace TaskManagement.Controllers
 {
+            [Authorize]
+
     [ApiController]
     [Route("api/shift")]
     public class ShiftController : ControllerBase
