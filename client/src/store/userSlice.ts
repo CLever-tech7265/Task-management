@@ -14,9 +14,10 @@ interface UserState {
   birthDate: string;
   email: string;
   isAuthenticated: boolean;
-  role: 'Manager' | 'Employee' | null;
-  token: string | null;
-  shifts?: string[];
+  role: string;
+  token: string;
+  shifts: any[];
+  profileCompleted: boolean; // ✅ הוסף את זה
 }
 
 const initialState: UserState = {
@@ -26,9 +27,10 @@ const initialState: UserState = {
   birthDate: '',
   email: '',
   isAuthenticated: false,
-  role: null,       // חדש
-  token: null,      // חדש
-  shifts: []
+  role: '',       // חדש
+  token: '',      // חדש
+  shifts: [],
+  profileCompleted:false
 };
 
  const userSlice = createSlice({
@@ -58,6 +60,8 @@ const initialState: UserState = {
 
   if (payload.shifts)
     state.shifts = payload.shifts;
+  if (payload.profileCompleted !== undefined)
+    state.profileCompleted = payload.profileCompleted;
 },
 setShifts(
   state,
@@ -73,8 +77,8 @@ setShifts(
   state.email = '';
   state.isAuthenticated = false;
 
-  state.role = null;
-  state.token = null;
+  state.role = '';
+  state.token = '';
   state.shifts = [];
 }
   }

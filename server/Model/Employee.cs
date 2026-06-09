@@ -38,6 +38,7 @@ public class CompleteProfileDto
     public string PeopleId { get; set; }
     public DateTime BirthDate { get; set; }
     public string Email { get; set; }
+    public List<Guid> SpecializationIds { get; set; } = new();
 
 }
     // public class EmployeeDto{

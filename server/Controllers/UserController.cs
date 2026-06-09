@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using TaskManagement.modules;
 using TaskManagement.Data;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/auth")]

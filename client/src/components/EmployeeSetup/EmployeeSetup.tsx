@@ -1,71 +1,152 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../store/userSlice";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { RootState } from "../../store/store";
 import axios from "axios";
-import './EmployeeSetup.css'
+import "./EmployeeSetup.css";
+
 const EmployeeSetup: React.FC = () => {
+  const API = import.meta.env.VITE_API_URL;
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // הקריאה ל-useSelector חייבת להיות כאן, לא בתוך handleSubmit
   const token = useSelector((state: RootState) => state.user.token);
+  const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
+  const role = useSelector((state: RootState) => state.user.role);
+
+  const [specializations, setSpecializations] = useState<any[]>([]);
+  const [selectedSpecs, setSelectedSpecs] = useState<string[]>([]);
 
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    peopleId: '',
-    birthDate: '',
-    email: ''
+    firstName: "",
+    lastName: "",
+    peopleId: "",
+    birthDate: "",
+    email: "",
   });
 
+  // ========================
+  // טעינת התמחויות
+  // ========================
+  useEffect(() => {
+    if (!token) return;
+
+    axios
+      .get(`${API}/api/specialization`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setSpecializations(res.data))
+      .catch((err) => console.error(err));
+  }, [token, API]);
+
+  // ========================
+  // ניווט מבוקר בלבד
+  // ========================
+//  useEffect(() => {
+//   if (!isAuthenticated) return;
+
+//   if (role === "Manager") {
+//     navigate("/manager");
+//     return;
+//   }
+
+//   if (role === "Employee") {
+//     // ניווט רק אם המשתמש חדש
+//     if (profileCompleted === true) {
+//       navigate("/employee");
+//     } 
+//     // אחרת נשאר בעמוד setup
+//   }
+// }, [isAuthenticated, role, profileCompleted, navigate]);
+ const profileCompleted = useSelector(
+    (state: RootState) => state.user.profileCompleted
+  );
+useEffect(() => {
+  if (!isAuthenticated) return;
+
+ console.log(profileCompleted);
+ 
+  if(profileCompleted){
+
+  if (role === "Manager") {
+    navigate("/manager");
+  }
+  else{
+    navigate("/employee")
+  }
+}
+}, [isAuthenticated, role,profileCompleted, navigate]);
+  // ========================
+  // שינוי שדות
+  // ========================
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
+  // ========================
+  // שליחה לשרת
+  // ========================
+
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  console.log('Submitting form with values:', form);
-  console.log('Token from Redux:', token);
+    if (!token) return;
 
-  if (!token) {
-    console.error('No token found in Redux state!');
-    return;
-  }
+    if (selectedSpecs.length === 0) {
+      alert("יש לבחור לפחות התמחות אחת");
+      return;
+    }
 
-  try {
-    const res = await axios.post(
-      'http://localhost:5063/api/employees/complete-profile',
-      form,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+    try {
+      const formToSend = {
+        ...form,
+        specializationIds: selectedSpecs,
+      };
+
+      await axios.post(
+        `${API}/api/employees/complete-profile`,
+        formToSend,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      }
-    );
+      );
+      const response = await axios.post(
+  `${API}/api/employees/complete-profile`,
+  formToSend,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  }
+);
 
-    console.log('Server response:', res.data);
+const data = response.data; // עכשיו יש לך את הנתונים מהשרת
 
-    dispatch(setUser({
-      firstName: form.firstName,
-      lastName: form.lastName,
-      identity: form.peopleId,
-      birthDate: form.birthDate,
-      email: form.email,
-      isAuthenticated: true,
-      role: 'Employee',
-      token,
-      shifts: []
-    }));
+      dispatch(
+        setUser({
+          ...form,
+          isAuthenticated: true,
+          role: "Employee",
+          token,
+          shifts: [],
+    profileCompleted: data.profileCompleted,
+        })
+      );
 
-    navigate('/employee');
-  } catch (error: any) {
-    console.error('Error status:', error.response?.status);
-console.log(JSON.stringify(error.response?.data, null, 2));  }
-};
+      navigate("/employee");
+    } catch (error: any) {
+      console.error(error.response?.data || error);
+    }
+  };
 
   return (
     <div className="setup-container">
@@ -78,9 +159,25 @@ console.log(JSON.stringify(error.response?.data, null, 2));  }
         <input type="date" name="birthDate" onChange={handleChange} />
         <input name="email" placeholder="אימייל" onChange={handleChange} />
 
+        <select
+          multiple
+          value={selectedSpecs}
+          onChange={(e) => {
+            const options = Array.from(e.target.selectedOptions);
+            setSelectedSpecs(options.map((o) => o.value));
+          }}
+        >
+          {specializations.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+
         <button type="submit">שמור והמשך</button>
       </form>
     </div>
   );
 };
-export default EmployeeSetup
+
+export default EmployeeSetup;

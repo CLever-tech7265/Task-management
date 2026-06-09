@@ -42,6 +42,9 @@ namespace TaskManagement.Data{
         .WithMany(s => s.AssignedEmployees)
         .HasForeignKey(x => x.ShiftId)
         .OnDelete(DeleteBehavior.Cascade);
+    modelBuilder.Entity<Employee>()
+    .HasMany(e => e.Specs)
+    .WithMany(s => s.Employees);
 
 }
         public DbSet<Employee> Employees { get; set; }

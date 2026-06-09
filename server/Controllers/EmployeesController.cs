@@ -7,6 +7,8 @@ using System.Security.Claims;
 
 namespace TaskManagement.Controllers
 {
+    // [Authorize]
+
     [ApiController]
     [Route("api/employees")]
     public class EmployeesController : ControllerBase
@@ -101,151 +103,67 @@ namespace TaskManagement.Controllers
         // השלמת פרופיל
         [Authorize(Roles ="Employee")]
         [HttpPost("complete-profile")]
-        public async Task<IActionResult> CompleteProfile([FromBody] CompleteProfileDto dto)
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userIdClaim))
-                return Unauthorized();
-
-            var userId = Guid.Parse(userIdClaim);
-
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.UserId == userId);
-
-            if (employee == null)
-            {
-                employee = new Employee
-                {
-                    Id = Guid.NewGuid(),
-                    FirstName = dto.FirstName,
-                    LastName = dto.LastName,
-                    PeopleId = dto.PeopleId,
-                    BirthDate = dto.BirthDate,
-                    Email = dto.Email,
-                    UserId = userId,
-                    Role = "Employee",
-                    AssignedEmployees = new(),
-                    PreferredEmployees = new()
-                };
-
-                _context.Employees.Add(employee);
-            }
-            else
-            {
-                employee.FirstName = dto.FirstName;
-                employee.LastName = dto.LastName;
-                employee.PeopleId = dto.PeopleId;
-                employee.BirthDate = dto.BirthDate;
-                employee.Email = dto.Email;
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Ok(employee);
-        }
-        // 🔵 הוספת משמרת מועדפת לעובד
-// 🔵 הוספת העדפת משמרת חדשה לעובד
-
-[Authorize]
-[HttpPost("create-with-preference")]
-public async Task<IActionResult> CreateShiftWithPreference([FromBody] ShiftDTO dto)
+public async Task<IActionResult> CompleteProfile([FromBody] CompleteProfileDto dto)
 {
-    try
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    if (string.IsNullOrEmpty(userIdClaim))
+        return Unauthorized();
+
+    var userId = Guid.Parse(userIdClaim);
+
+    var employee = await _context.Employees
+        .Include(e => e.Specs)
+        .FirstOrDefaultAsync(e => e.UserId == userId);
+
+    var specs = await _context.Specialization
+    .Where(s => dto.SpecializationIds.Contains(s.Id))
+    .ToListAsync();
+
+    if (employee == null)
     {
-        // 1. בדיקת DTO
-        if (dto == null)
-        {
-            return BadRequest(new
-            {
-                message = "DTO is null"
-            });
-        }
-
-        if (string.IsNullOrWhiteSpace(dto.StartHour) ||
-            string.IsNullOrWhiteSpace(dto.FinishHour) ||
-            string.IsNullOrWhiteSpace(dto.Day))
-        {
-            return BadRequest(new
-            {
-                message = "StartHour, FinishHour, Day are required"
-            });
-        }
-
-        // 2. שליפת משתמש מהטוקן
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userIdClaim))
-        {
-            return Unauthorized(new
-            {
-                message = "Missing user claim"
-            });
-        }
-
-        var userId = Guid.Parse(userIdClaim);
-
-        // 3. שליפת עובד
-        var employee = await _context.Employees
-            .FirstOrDefaultAsync(e => e.UserId == userId);
-
-        if (employee == null)
-        {
-            return NotFound(new
-            {
-                message = "Employee not found"
-            });
-        }
-
-        // 4. יצירת Shift
-        var shift = new Shift
+        employee = new Employee
         {
             Id = Guid.NewGuid(),
-            StartHour = dto.StartHour.Trim(),
-            FinishHour = dto.FinishHour.Trim(),
-            Day = dto.Day.Trim(),
-            Specs = new(),
-            AssignedEmployees = new(),
-            PreferredEmployees = new()
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            PeopleId = dto.PeopleId,
+            BirthDate = dto.BirthDate,
+            Email = dto.Email,
+            UserId = userId,
+            Specs = new List<Specialization>()
         };
 
-        await _context.Shifts.AddAsync(shift);
+        _context.Employees.Add(employee);
+    }
+    else
+    {
+        employee.FirstName = dto.FirstName;
+        employee.LastName = dto.LastName;
+        employee.PeopleId = dto.PeopleId;
+        employee.BirthDate = dto.BirthDate;
+        employee.Email = dto.Email;
+        // ניקוי קשרים ישנים
+        employee.Specs = specs;
 
-        // 5. שמירה ראשונה כדי לוודא יצירת Shift ב-DB
-        await _context.SaveChangesAsync();
+    }
 
-        // 6. יצירת Preference
-        var preference = new EmployeeShiftPreference
-        {
-            Id = Guid.NewGuid(),
-            EmployeeId = employee.Id,
-            ShiftId = shift.Id
-        };
+    // 🔥 שליפת ישויות אמיתיות מה-DB
+    
+    // 🔥 חיבור ל-navigation property
+    await _context.SaveChangesAsync();
 
-        await _context.EmployeeShiftPreferences.AddAsync(preference);
-
-        // 7. שמירה שנייה
-        await _context.SaveChangesAsync();
-
-        // 8. החזרה
-        return Ok(new CreateShiftResponseDto
+return Ok(new
 {
-    ShiftId = shift.Id,
-    StartHour = shift.StartHour,
-    FinishHour = shift.FinishHour,
-    Day = shift.Day,
-    PreferenceId = preference.Id
+    FirstName = employee.FirstName,
+    LastName = employee.LastName,
+    PeopleId = employee.PeopleId,
+    BirthDate = employee.BirthDate,
+    Email = employee.Email,
+    Role = "Employee",
+    ProfileCompleted = true,
+    Token = "..." // אם רוצים לעדכן גם token
 });
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(500, new
-        {
-            message = ex.Message,
-            innerException = ex.InnerException?.Message,
-            stackTrace = ex.StackTrace
-        });
-    }
 }
 public class CreateShiftResponseDto
 {
