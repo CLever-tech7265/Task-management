@@ -68,11 +68,6 @@ builder.Services.AddCors(options =>
     });
 });
 // builder.WebHost.UseUrls("http://+:8080");
-builder.Services.AddHealthChecks()
-    .AddCheck("api", () =>
-    {
-        return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("API is running");
-    });
 
 var app = builder.Build();
 
@@ -101,7 +96,7 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHealthChecks("/health");
+
 
 app.Run();
 
