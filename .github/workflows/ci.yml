@@ -21,9 +21,12 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: ./TaskManagement
 
       - name: Build backend
         run: dotnet build --no-restore
+      - name: Show files
+        run: ls -R
 
   frontend:
     runs-on: ubuntu-latest
