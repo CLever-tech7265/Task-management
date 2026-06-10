@@ -22,6 +22,7 @@ public class AuthController : ControllerBase
 [HttpPost("login")]
 public IActionResult Login(LoginDto loginDto)
 {
+    try{
     var user = _context.Users.FirstOrDefault(u => u.UserName == loginDto.UserName);
     
     if (user == null) return Unauthorized("User not found");
@@ -61,6 +62,15 @@ if (!BCrypt.Net.BCrypt.Verify(
         userId = user.Id,
         role = user.Role
     });
+    }
+        catch(Exception ex)
+        {
+             Console.WriteLine($"Login failed: {ex.Message}");
+            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+            // מחזירים ללקוח 500 עם ההודעה (לפיתוח בלבד, בייצור לא להראות פרטים)
+            return StatusCode(500, new { Error = ex.Message });
+        }
 }
     [HttpGet("users")]
     [Authorize(Roles = "Manager")]

@@ -61,8 +61,11 @@ public DbSet<EmployeeAssignedShift> EmployeeAssignedShifts { get; set; }
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
-            // optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Miri,96629;MultipleActiveResultSets=true;TrustServerCertificate=True;");
-            optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Chani,7265;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+       
+        // רק אם לא הוגדרו אופציות חיצוניות (למשל בבדיקות)
+   optionsBuilder.UseSqlServer("Server=localhost,1434;Database=taskMangement;User Id=SA;Password=Chani,7265;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+    
+    // optionsBuilder.UseSqlServer("Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Miri,96629;MultipleActiveResultSets=true;TrustServerCertificate=True;");
         }
     }
 }

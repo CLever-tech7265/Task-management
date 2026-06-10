@@ -6,7 +6,7 @@ services:
             ACCEPT_EULA: "Y"
             SA_PASSWORD: "Chani,7265"
       ports:
-         - "1434:1433"
+         - "1435:1433"
   server:
     build:
       context: ./server
@@ -18,8 +18,7 @@ services:
     environment:
      - ASPNETCORE_ENVIRONMENT=Development
      - ASPNETCORE_URLS=http://+:8080
-     - ConnectionStrings__DefaultConnection=Server=db,1433;Database=taskMangement;User Id=SA;Password=Chani,7265;
-   
+     - ConnectionStrings__TaskDbContext=Server=db;Database=taskMangement;User Id=SA;Password=Chani,7265;TrustServerCertificate=True;   
   client:
     build:
       context: ./client
