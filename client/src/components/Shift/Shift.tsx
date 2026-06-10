@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./Requirements.css";
+import "./Shift.css";
 import { useNavigate } from "react-router-dom";
 import { store } from "../../store/store";
 
-interface PreferenceType {
-  preferenceId: string;
-  shiftId: string;
+interface ShiftType {
+  id: string;
   startHour: string;
   finishHour: string;
   day: string;
@@ -14,25 +13,19 @@ interface PreferenceType {
 
 const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
 
-const Requirements: React.FC = () => {
+const Shift: React.FC = () => {
   const navigate = useNavigate();
   const token = store.getState().user.token;
 
-  const [shifts, setShifts] = useState<PreferenceType[]>([]);
-  const [form, setForm] = useState({
-    startHour: "",
-    finishHour: "",
-    day: "",
-  });
-
+  const [shifts, setShifts] = useState<ShiftType[]>([]);
+  const [form, setForm] = useState({ startHour: "", finishHour: "", day: "" });
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const API = `${import.meta.env.VITE_API_URL}/api/shift-preferences`;
+  const API = `${import.meta.env.VITE_API_URL}/api/shift`;
 
-  // ================= LOAD =================
   const loadShifts = async () => {
     try {
-      const res = await axios.get(`${API}/my-shifts`, {
+      const res = await axios.get(API, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShifts(res.data);
@@ -45,14 +38,10 @@ const Requirements: React.FC = () => {
     loadShifts();
   }, []);
 
-  // ================= HANDLE =================
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ================= CREATE =================
   const createShift = async () => {
     if(form.startHour>form.finishHour){
       var time=form.startHour;
@@ -60,14 +49,8 @@ const Requirements: React.FC = () => {
       form.finishHour=time;
     }
     if (!form.startHour || !form.finishHour || !form.day) return;
-    
     try {
-      await axios.post(
-        `${API}/create-with-preference`,
-        form,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      await axios.post(API, form, { headers: { Authorization: `Bearer ${token}` } });
       setForm({ startHour: "", finishHour: "", day: "" });
       loadShifts();
     } catch (err) {
@@ -75,22 +58,15 @@ const Requirements: React.FC = () => {
     }
   };
 
-  // ================= UPDATE =================
   const updateShift = async (id: string) => {
-     if(form.startHour>form.finishHour){
+    if(form.startHour>form.finishHour){
       var time=form.startHour;
       form.startHour=form.finishHour;
       form.finishHour=time;
     }
     try {
-      await axios.put(
-        `${API}/${id}`,
-        form,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
+      await axios.put(`${API}/${id}`, form, { headers: { Authorization: `Bearer ${token}` } });
       setEditingId(null);
-    
       setForm({ startHour: "", finishHour: "", day: "" });
       loadShifts();
     } catch (err) {
@@ -98,56 +74,34 @@ const Requirements: React.FC = () => {
     }
   };
 
-  // ================= DELETE =================
   const deleteShift = async (id: string) => {
     try {
-      await axios.delete(`${API}/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await axios.delete(`${API}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       loadShifts();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // ================= EDIT =================
-  const handleEdit = (s: PreferenceType) => {
-    setEditingId(s.preferenceId);
-    setForm({
-      startHour: s.startHour,
-      finishHour: s.finishHour,
-      day: s.day,
-    });
+  const handleEdit = (shift: ShiftType) => {
+    setEditingId(shift.id);
+    setForm({ startHour: shift.startHour, finishHour: shift.finishHour, day: shift.day });
   };
 
-  const handleGoBack = () => navigate("/");
+  const handleGoBack = () => navigate("/manager");
 
-  // ================= UI =================
   return (
     <div className="shift-container">
       <div className="shift-card">
-        <h1>זמינות לעבודה</h1>
+        <h1>ניהול משמרות</h1>
 
         <button className="back-btn" onClick={handleGoBack}>
-          ← חזרה לדף הבית
+          ← חזרה לדף מנהל
         </button>
 
         <div className="shift-form">
-          <input
-            type="time"
-            name="startHour"
-            value={form.startHour}
-            onChange={handleChange}
-          />
-
-          <input
-            type="time"
-            name="finishHour"
-            value={form.finishHour}
-            onChange={handleChange}
-          />
-
+          <input type="time" name="startHour" value={form.startHour} onChange={handleChange} />
+          <input type="time" name="finishHour" value={form.finishHour} onChange={handleChange} />
           <select name="day" value={form.day} onChange={handleChange}>
             <option value="">בחר יום</option>
             {days.map((d) => (
@@ -156,21 +110,12 @@ const Requirements: React.FC = () => {
               </option>
             ))}
           </select>
-
-          <button
-            className="primary-btn"
-            onClick={
-              editingId
-                ? () => updateShift(editingId)
-                : createShift
-            }
-          >
-            {editingId ? "עדכן זמינות" : "הוסף זמינות"}
+          <button className="primary-btn" onClick={editingId ? () => updateShift(editingId) : createShift}>
+            {editingId ? "עדכן משמרת" : "הוסף משמרת"}
           </button>
         </div>
 
-        <h2 className="section-title">הזמינות שלי</h2>
-
+        <h2>כל המשמרות הקיימות</h2>
         <table className="shift-table">
           <thead>
             <tr>
@@ -180,16 +125,15 @@ const Requirements: React.FC = () => {
               <th>פעולות</th>
             </tr>
           </thead>
-
           <tbody>
             {shifts.map((s) => (
-              <tr key={s.preferenceId}>
+              <tr key={s.id}>
                 <td>{s.day}</td>
                 <td>{s.startHour}</td>
                 <td>{s.finishHour}</td>
                 <td>
                   <button onClick={() => handleEdit(s)}>ערוך</button>
-                  <button className="delete" onClick={() => deleteShift(s.preferenceId)}>
+                  <button className="delete" onClick={() => deleteShift(s.id)}>
                     מחק
                   </button>
                 </td>
@@ -197,10 +141,9 @@ const Requirements: React.FC = () => {
             ))}
           </tbody>
         </table>
-
       </div>
     </div>
   );
 };
 
-export default Requirements;
+export default Shift;

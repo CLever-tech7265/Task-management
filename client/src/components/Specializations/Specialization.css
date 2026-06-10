@@ -1,74 +1,148 @@
-.requirements-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px;
-  font-family: Arial;
+.spec-container {
+  max-width: 950px;
+  margin: 40px auto;
+  background: #f8fafc;
+  padding: 35px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #0f172a;
 }
 
-.requirements-card {
-  width: 900px;
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-h1 {
+/* כותרת */
+.spec-container h1 {
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: 800;
+  margin-bottom: 25px;
+  color: #1e3a8a;
 }
 
-.form-row {
+/* ===== FORM ===== */
+.spec-form {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 450px;
+  margin: 0 auto 25px auto;
 }
 
-.form-row input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+.spec-form input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 18px;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f172a;
 }
 
-.form-row button {
-  padding: 10px 20px;
+.spec-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+/* כפתור הוספה/עדכון */
+.primary-btn,
+.spec-form button {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
   border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 8px;
   cursor: pointer;
+  background: #3b82f6;
+  color: white;
+  transition: 0.2s;
 }
 
-.form-row button:hover {
-  background: #0056b3;
+.primary-btn:hover,
+.spec-form button:hover {
+  background: #1d4ed8;
 }
 
-.availability-table {
+/* ===== TABLE ===== */
+.table-wrapper {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.spec-table {
   width: 100%;
   border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 17px;
 }
 
-.availability-table th,
-.availability-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
-
-button {
-  margin: 3px;
-  padding: 6px 10px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-.delete {
-  background: #dc3545;
+.spec-table th {
+  background: #1e3a8a;
   color: white;
+  padding: 14px;
+  text-align: center;
+  font-size: 17px;
+}
+
+.spec-table td {
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.spec-table tr:nth-child(even) {
+  background: #eef2ff;
+}
+
+.spec-table tr:hover {
+  background: #dbeafe;
+}
+
+/* ===== כפתורי פעולה ===== */
+.edit-btn {
+  background: #3b82f6;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin: 0 4px;
+}
+
+.edit-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin: 0 4px;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+/* ===== כפתור חזרה למנהל ===== */
+.back-btn {
+  margin-top: 25px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #6b7280;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: #4b5563;
 }

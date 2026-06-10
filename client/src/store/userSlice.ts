@@ -75,8 +75,7 @@ setShifts(
   state.identity = '';
   state.birthDate = '';
   state.email = '';
-  state.isAuthenticated = false;
-
+  state.isAuthenticated = true;
   state.role = '';
   state.token = '';
   state.shifts = [];

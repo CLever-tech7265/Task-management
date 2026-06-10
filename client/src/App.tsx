@@ -9,6 +9,8 @@ import Specialization from './components/Specializations/Specialization';
 import EmployeeSetup from './components/EmployeeSetup/EmployeeSetup';
 import ManagerDashboard from './components/ManagerDashboard/ManagerDashboard';
 import EmployeeDashboard from './components/EmployeeDashboard/EmployeeDashboard';
+import Shift  from './components/Shift/Shift';
+import Users from './components/Users/Users';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 
@@ -39,9 +41,12 @@ const AppRoutes: React.FC = () => {
       {/* עובד */}
       <Route path="/employee" element={<EmployeeDashboard />} />
       <Route path="/employee/setup" element={<EmployeeSetup />} />
-
       {/* קיים אצלך */}
+            <Route path="/shifts" element={<Shift />} />
+
       <Route path="/requirements" element={<Requirements />} />
+      <Route path="/employees" element={<Users />} />
+
       <Route path="/Specialization" element={<Specialization />} />
     </Routes>
   );

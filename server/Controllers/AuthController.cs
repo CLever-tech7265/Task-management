@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Data;
 using TaskManagement.modules;
- 
+ using Microsoft.AspNetCore.Authorization;
 namespace TaskManagement.Controllers{
     
 [ApiController]
 [Route("api/auth")]
+
 public class AuthController : ControllerBase
 {
     private readonly TaskDbContext _context;
@@ -15,7 +16,10 @@ public class AuthController : ControllerBase
     {
         _context = context;
     }
-    [HttpPost("register")]
+[HttpPost("register")]
+
+[Authorize(Roles = "Manager")]
+
 public async Task<IActionResult> Register(RegisterDto dto)
 {
     // בדיקה אם המשתמש כבר קיים

@@ -1,15 +1,25 @@
 services:
+  db:
+      image: mcr.microsoft.com/mssql/server:2022-latest
+      container_name: task_db
+      environment:
+            ACCEPT_EULA: "Y"
+            SA_PASSWORD: "Chani,7265"
+      ports:
+         - "1434:1433"
   server:
     build:
       context: ./server
       dockerfile: Dockerfile
     ports:
       - "5063:8080"
+    depends_on:
+      - db
     environment:
      - ASPNETCORE_ENVIRONMENT=Development
      - ASPNETCORE_URLS=http://+:8080
-     - ConnectionStrings__DefaultConnection=Server=localhost, 1434;Database=taskMangement;User Id=SA;Password=Chani,7265;
-
+     - ConnectionStrings__DefaultConnection=Server=db,1433;Database=taskMangement;User Id=SA;Password=Chani,7265;
+   
   client:
     build:
       context: ./client
@@ -18,6 +28,8 @@ services:
       - "5174:5174"
     depends_on:
       - server
+    environment:
+      - VITE_API_URL=http://localhost:5063
     dns:
       - 8.8.8.8
       - 1.1.1.1

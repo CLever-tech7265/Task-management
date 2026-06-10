@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using TaskManagement.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TaskManagement.modules;
-using TaskManagement.Data;
-using Microsoft.AspNetCore.Authorization;
+
 
 [ApiController]
 [Route("api/auth")]
@@ -19,7 +19,6 @@ public class AuthController : ControllerBase
         _context = context;
         _configuration = configuration;
     }
-
 [HttpPost("login")]
 public IActionResult Login(LoginDto loginDto)
 {
@@ -63,4 +62,59 @@ if (!BCrypt.Net.BCrypt.Verify(
         role = user.Role
     });
 }
+    [HttpGet("users")]
+    [Authorize(Roles = "Manager")]
+    public IActionResult GetUsers()
+    {
+        var users = _context.Users
+            .Select(u => new { u.Id, u.UserName, u.Role })
+            .ToList();
+        return Ok(users);
+    }
+
+    [HttpPut("users/{id}")]
+    [Authorize(Roles = "Manager")]
+    public IActionResult UpdateUser(Guid id, [FromBody] UpdateUserDto dto)
+    {
+        var user = _context.Users.Find(id);
+        if (user == null) return NotFound("User not found");
+
+        if (!string.IsNullOrWhiteSpace(dto.UserName))
+            user.UserName = dto.UserName;
+
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+        if (!string.IsNullOrWhiteSpace(dto.Role))
+            user.Role = dto.Role;
+
+        _context.SaveChanges();
+        return NoContent();
+    }
+
+    [HttpDelete("users/{id}")]
+    [Authorize(Roles = "Manager")]
+    public IActionResult DeleteUser(Guid id)
+    {
+        var user = _context.Users.Find(id);
+        if (user == null) return NotFound("User not found");
+
+        _context.Users.Remove(user);
+        _context.SaveChanges();
+        return NoContent();
+    }
+}
+
+// ================= DTOs =================
+public class LoginDto
+{
+    public string UserName { get; set; } = null!;
+    public string Password { get; set; } = null!;
+}
+
+public class UpdateUserDto
+{
+    public string? UserName { get; set; }
+    public string? Password { get; set; }
+    public string? Role { get; set; }
 }

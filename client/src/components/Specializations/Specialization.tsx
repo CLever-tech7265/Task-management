@@ -1,37 +1,43 @@
-// SpecializationRedux.tsx
-import React, { useEffect, useState } from 'react';
-import './Specialization.css';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../store/store';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import "./Specialization.css";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+// בתוך הקומפוננטה
+
+
+// בתחתית ה- JSX, אחרי כל התוכן:
+
 
 interface Specialization {
   id: string;
   name: string;
 }
 
-const API = 'http://localhost:5063/api/specialization';
-
 const SpecializationRedux: React.FC = () => {
+  
+
   const token = useSelector((state: RootState) => state.user.token);
   const [list, setList] = useState<Specialization[]>([]);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const API = `${import.meta.env.VITE_API_URL}/api/specialization`;
+const navigate = useNavigate();
+const goBack = () => navigate("/manager");
+
   const axiosInstance = axios.create({
     baseURL: API,
-    headers: {
-      'Content-Type': 'application/json',
-    }
+    headers: { "Content-Type": "application/json" },
   });
 
-  // מוסיף אוטומטית Authorization לכל בקשה
+  // מוסיף Authorization לכל בקשה
   axiosInstance.interceptors.request.use((config) => {
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   });
 
@@ -40,16 +46,16 @@ const SpecializationRedux: React.FC = () => {
     setError(null);
 
     if (!token) {
-      setError('Missing token');
+      setError("Missing token");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await axiosInstance.get<Specialization[]>('');
+      const res = await axiosInstance.get<Specialization[]>("");
       setList(res.data);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load specializations');
+      setError(err.response?.data?.message || "Failed to load specializations");
     } finally {
       setLoading(false);
     }
@@ -67,13 +73,13 @@ const SpecializationRedux: React.FC = () => {
       if (editId) {
         await axiosInstance.put(`/${editId}`, { name });
       } else {
-        await axiosInstance.post('', { name });
+        await axiosInstance.post("", { name });
       }
-      setName('');
+      setName("");
       setEditId(null);
       load();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to submit specialization');
+      setError(err.response?.data?.message || "Failed to submit specialization");
     }
   };
 
@@ -88,7 +94,7 @@ const SpecializationRedux: React.FC = () => {
       await axiosInstance.delete(`/${id}`);
       load();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to delete specialization');
+      setError(err.response?.data?.message || "Failed to delete specialization");
     }
   };
 
@@ -103,36 +109,44 @@ const SpecializationRedux: React.FC = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <button onClick={handleSubmit}>
-          {editId ? 'עדכן' : 'הוסף'}
+        <button className="primary-btn" onClick={handleSubmit}>
+          {editId ? "עדכן" : "הוסף"}
         </button>
       </div>
 
-      {loading && <div>Loading...</div>}
+      {loading && <div className="loading">טוען...</div>}
       {error && <div className="error">{error}</div>}
 
-      <table className="spec-table">
-        <thead>
-          <tr>
-            <th>שם</th>
-            <th>פעולות</th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.map((item) => (
-            <tr key={item.id}>
-              <td>{item.name}</td>
-              <td>
-                <button onClick={() => handleEdit(item)}>ערוך</button>
-                <button className="delete" onClick={() => handleDelete(item.id)}>
-                  מחק
-                </button>
-              </td>
+      <div className="table-wrapper">
+        <table className="spec-table">
+          <thead>
+            <tr>
+              <th>שם ההתמחות</th>
+              <th>פעולות</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {list.map((item) => (
+              <tr key={item.id}>
+                <td>{item.name}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>
+                    ✏️ ערוך
+                  </button>
+                  <button className="delete-btn" onClick={() => handleDelete(item.id)}>
+                    🗑️ מחק
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      <button className="back-btn" onClick={goBack}>
+  חזרה לדף מנהל
+</button>
+      </div>
     </div>
+    
   );
 };
 
