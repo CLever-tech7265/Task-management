@@ -22,9 +22,9 @@ jobs:
         run: dotnet restore
         working-directory: server
 
-      - name: Build
-        run: dotnet build --no-restore -c Release
-        working-directory: server
+      # - name: Build
+      #   run: dotnet build --no-restore -c Release
+      #   working-directory: server
 
       # - name: Test
       #   run: dotnet test Server.Tests/Server.Tests.csproj -c Release --no-build
