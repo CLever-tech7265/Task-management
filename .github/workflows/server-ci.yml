@@ -28,14 +28,14 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
       working-directory: server
-    # - name: Publish
-    #   run: dotnet publish -c Release -o publish
-    #   working-directory: server
-    # - name: Upload artifact
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: server-publish
-    #     path: server/publish
+    - name: Publish
+      run: dotnet publish -c Release -o publish
+      working-directory: server
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-publish
+        path: server/publish
     
     # - name: Test
     #   run: dotnet test --no-build
