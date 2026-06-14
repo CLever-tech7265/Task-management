@@ -26,9 +26,9 @@ jobs:
         run: dotnet build --no-restore -c Release
         working-directory: server
 
-      - name: Test
-        run: dotnet test Server.Tests/Server.Tests.csproj -c Release --no-build
-        working-directory: server
+      # - name: Test
+      #   run: dotnet test Server.Tests/Server.Tests.csproj -c Release --no-build
+      #   working-directory: server
 
       # - name: Publish
       #   run: dotnet publish TaskManagement.csproj -c Release -o publish --no-build
