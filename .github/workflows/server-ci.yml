@@ -1,44 +1,41 @@
-
 name: Server CI
 
 on:
   push:
-    branches: [ "ci"]
+    branches: [ "ci" ]
     paths:
       - 'server/**'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore
+        working-directory: server
 
-    - name: Restore
-      run: dotnet restore
-      working-directory: server
+      - name: Build
+        run: dotnet build --no-restore -c Release
+        working-directory: server
 
-    - name: Build
-      run: dotnet build --no-restore
-      working-directory: server
-    - name: Publish
-      run: dotnet publish -c Release -o publish
-      working-directory: server
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: server-publish
-        path: server/publish
-    
-    - name: Test
-      run: dotnet test server/Server.Tests/Server.Tests.csproj -c Release --no-build
-      working-directory: server
-     # ✅ רק אם הטסטים עוברים
-   #
+      - name: Test
+        run: dotnet test Server.Tests/Server.Tests.csproj -c Release --no-build
+        working-directory: server
+
+      - name: Publish
+        run: dotnet publish TaskManagement.csproj -c Release -o publish --no-build
+        working-directory: server
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-publish
+          path: server/publish
