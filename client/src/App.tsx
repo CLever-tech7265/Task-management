@@ -11,6 +11,7 @@ import ManagerDashboard from './components/ManagerDashboard/ManagerDashboard';
 import EmployeeDashboard from './components/EmployeeDashboard/EmployeeDashboard';
 import Shift  from './components/Shift/Shift';
 import Users from './components/Users/Users';
+import Tasks from './components/Tasks/Tasks';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 
@@ -42,7 +43,8 @@ const AppRoutes: React.FC = () => {
       <Route path="/employee" element={<EmployeeDashboard />} />
       <Route path="/employee/setup" element={<EmployeeSetup />} />
       {/* קיים אצלך */}
-            <Route path="/shifts" element={<Shift />} />
+      <Route path="/shifts" element={<Shift />} />
+      <Route path="/tasks" element={<Tasks />} />
 
       <Route path="/requirements" element={<Requirements />} />
       <Route path="/employees" element={<Users />} />
