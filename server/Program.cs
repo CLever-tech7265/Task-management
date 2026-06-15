@@ -67,11 +67,17 @@ builder.Services.AddCors(options =>
                 "http://localhost:5175");
     });
 });
+
 // builder.WebHost.UseUrls("http://+:8080");
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateAsyncScope())
+{
+    var db=scope.ServiceProvider.GetRequiredService<TaskDbContext>();
+    db.Database.Migrate();
 
+}
 // if (app.Environment.IsDevelopment())
 // {
 //     app.MapOpenApi();

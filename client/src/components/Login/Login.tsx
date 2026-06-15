@@ -76,6 +76,7 @@ const Login: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const API = import.meta.env.VITE_API_URL;
 
   // ========================
   // login
@@ -90,7 +91,7 @@ const Login: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5063/api/auth/login",
+        `${API}/api/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
