@@ -6,7 +6,7 @@ using TaskManagement.modules;
 
 namespace TaskManagement.Controllers
 {
-    // [Authorize]
+    //  [Authorize]
 
     [ApiController]
     [Route("api/specialization")]

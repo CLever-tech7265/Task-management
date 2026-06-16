@@ -155,14 +155,8 @@ public async Task<IActionResult> CompleteProfile([FromBody] CompleteProfileDto d
 
 return Ok(new
 {
-    FirstName = employee.FirstName,
-    LastName = employee.LastName,
-    PeopleId = employee.PeopleId,
-    BirthDate = employee.BirthDate,
-    Email = employee.Email,
-    Role = "Employee",
-    ProfileCompleted = true,
-    Token = "..." // אם רוצים לעדכן גם token
+    role = "Employee",
+    profileCompleted = true
 });
 }
 public class CreateShiftResponseDto
