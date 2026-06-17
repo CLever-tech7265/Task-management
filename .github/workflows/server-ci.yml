@@ -30,12 +30,4 @@ jobs:
         run: dotnet test ../Server.Tests/Server.Tests.csproj -c Release --no-build
         working-directory: server
 
-      # - name: Publish
-      #   run: dotnet publish TaskManagement.csproj -c Release -o publish --no-build
-      #   working-directory: server
-
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: server-publish
-      #     path: server/publish
+      
