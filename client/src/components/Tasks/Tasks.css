@@ -102,3 +102,16 @@ input {
   color: white;
   border-radius: 6px;
 }
+.back-btn {
+  background: #6b7280;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.back-btn:hover {
+  background: #4b5563;
+}

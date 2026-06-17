@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Tasks.css";
 
@@ -23,6 +24,11 @@ interface Task {
 }
 
 const Task: React.FC = () => {
+  const navigate = useNavigate();
+
+const handleGoBack = () => {
+  navigate("/manager"); // או "/" אם זה דף הבית אצלך
+};
   const API = import.meta.env.VITE_API_URL;
 
   const token = localStorage.getItem("token");
@@ -122,7 +128,9 @@ const Task: React.FC = () => {
   // ================= UI =================
   return (
     <div className="task-container">
-
+    <button className="back-btn" onClick={handleGoBack}>
+  ← חזרה לדף מנהל
+</button>
       <h1>ניהול משימות</h1>
 
       {/* FORM */}
