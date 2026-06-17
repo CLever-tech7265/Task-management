@@ -2,7 +2,7 @@ name: Client CI
 
 on:
   push:
-    branches: [ "connectServer" ]
+    branches: [ "main" ]
     paths:
       - 'client/**'
 
