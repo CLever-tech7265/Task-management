@@ -27,7 +27,7 @@ jobs:
         working-directory: server
 
       - name: Test
-        run: dotnet test Server.Tests/Server.Tests.csproj -c Release --no-build
+        run: dotnet test ./Server.Tests/Server.Tests.csproj -c Release --no-build
         working-directory: server
 
       # - name: Publish
