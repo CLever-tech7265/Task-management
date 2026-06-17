@@ -16,6 +16,19 @@ services:
       Jwt__Issuer: TaskManagement
       Jwt__Audience: TaskManagementUsers
 
+  logic_server:
+    build:
+      context: ./logic-server
+      dockerfile: Dockerfile
+    container_name: logic_server
+    ports:
+      - "3000:3001"
+    depends_on:
+      - server
+    environment:
+      PORT: 3000
+      BASE_URL: http://server:8080/api/task
+
   task_db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: task_db
@@ -35,6 +48,7 @@ services:
       - server
     environment:
       VITE_API_URL: http://localhost:8080
+      VITE_NODE_API_URL: http://localhost:8080
 
 volumes:
   sql_data:

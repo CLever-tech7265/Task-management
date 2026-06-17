@@ -24,7 +24,7 @@ interface Task {
 
 const Task: React.FC = () => {
   const API = import.meta.env.VITE_API_URL;
-
+  const NODE_API_URL=import.meta.env.VITE_NODE_API_URL;
   const token = localStorage.getItem("token");
 
   const headers = {
@@ -63,7 +63,20 @@ const Task: React.FC = () => {
       console.log("LOAD ERROR", err);
     }
   };
-
+const fetchFromLogicServer = async () => {
+  try {
+    const res = await axios.get(`${NODE_API_URL}/api/task`, {
+  params: {
+    skip: 0,
+    take: 10
+  },
+  headers
+});
+    console.log("TASKS FROM LOGIC SERVER:", res.data);
+  } catch (err) {
+    console.log("LOGIC SERVER ERROR", err);
+  }
+};
   // ================= CREATE / UPDATE =================
   const saveTask = async () => {
     try {
@@ -220,7 +233,9 @@ const Task: React.FC = () => {
           ))}
         </tbody>
       </table>
-
+<button className="primary-btn" onClick={fetchFromLogicServer}>
+  קבל משימות מהשרת הביניים
+</button>
     </div>
   );
 };
