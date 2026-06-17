@@ -25,7 +25,7 @@ public async Task<IActionResult> Register(RegisterDto dto)
     // בדיקה אם המשתמש כבר קיים
     if (await _context.Users.AnyAsync(u => u.UserName == dto.UserName))
     {
-        return BadRequest("User already exists");
+        return BadRequest("The user already exists");
     }
 
     // יצירת User
