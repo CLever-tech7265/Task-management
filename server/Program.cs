@@ -72,12 +72,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateAsyncScope())
-{
-    var db=scope.ServiceProvider.GetRequiredService<TaskDbContext>();
-    db.Database.Migrate();
+// using (var scope = app.Services.CreateAsyncScope())
+// {
+//     var db=scope.ServiceProvider.GetRequiredService<TaskDbContext>();
+//     db.Database.Migrate();
 
-}
+// }
 // if (app.Environment.IsDevelopment())
 // {
 //     app.MapOpenApi();
