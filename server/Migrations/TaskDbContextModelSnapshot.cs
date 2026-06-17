@@ -172,7 +172,12 @@ namespace TaskManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TaskId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
 
                     b.ToTable("Shifts");
                 });
@@ -191,7 +196,12 @@ namespace TaskManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TaskId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
 
                     b.ToTable("Specialization");
                 });
@@ -210,17 +220,7 @@ namespace TaskManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("Shift")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Specialization")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Shift");
-
-                    b.HasIndex("Specialization");
 
                     b.ToTable("Tasks");
                 });
@@ -333,23 +333,18 @@ namespace TaskManagement.Migrations
                     b.Navigation("Shift");
                 });
 
-            modelBuilder.Entity("TaskManagement.modules.Task", b =>
+            modelBuilder.Entity("TaskManagement.modules.Shift", b =>
                 {
-                    b.HasOne("TaskManagement.modules.Shift", "Shifts")
-                        .WithMany()
-                        .HasForeignKey("Shift")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("TaskManagement.modules.Task", null)
+                        .WithMany("Shifts")
+                        .HasForeignKey("TaskId");
+                });
 
-                    b.HasOne("TaskManagement.modules.Specialization", "Specializations")
-                        .WithMany()
-                        .HasForeignKey("Specialization")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shifts");
-
-                    b.Navigation("Specializations");
+            modelBuilder.Entity("TaskManagement.modules.Specialization", b =>
+                {
+                    b.HasOne("TaskManagement.modules.Task", null)
+                        .WithMany("Specializations")
+                        .HasForeignKey("TaskId");
                 });
 
             modelBuilder.Entity("TaskManagement.modules.Employee", b =>
@@ -369,6 +364,13 @@ namespace TaskManagement.Migrations
                     b.Navigation("AssignedEmployees");
 
                     b.Navigation("PreferredEmployees");
+                });
+
+            modelBuilder.Entity("TaskManagement.modules.Task", b =>
+                {
+                    b.Navigation("Shifts");
+
+                    b.Navigation("Specializations");
                 });
 
             modelBuilder.Entity("TaskManagement.modules.User", b =>

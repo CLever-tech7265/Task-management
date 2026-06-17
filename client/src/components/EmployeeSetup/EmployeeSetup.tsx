@@ -66,18 +66,15 @@ const EmployeeSetup: React.FC = () => {
 useEffect(() => {
   if (!isAuthenticated) return;
 
- console.log(profileCompleted);
- 
-  if(profileCompleted){
-
   if (role === "Manager") {
     navigate("/manager");
+    return;
   }
-  else{
-    navigate("/employee")
+
+  if (role === "Employee" && profileCompleted) {
+    navigate("/employee");
   }
-}
-}, [isAuthenticated, role,profileCompleted, navigate]);
+}, [isAuthenticated, role, profileCompleted]);
   // ========================
   // שינוי שדות
   // ========================
@@ -92,61 +89,45 @@ useEffect(() => {
   // שליחה לשרת
   // ========================
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!token) return;
+  if (!token) return;
+  if (selectedSpecs.length === 0) return;
 
-    if (selectedSpecs.length === 0) {
-      alert("יש לבחור לפחות התמחות אחת");
-      return;
-    }
+  try {
+    const formToSend = {
+      ...form,
+      specializationIds: selectedSpecs,
+    };
 
-    try {
-      const formToSend = {
-        ...form,
-        specializationIds: selectedSpecs,
-      };
+    const response = await axios.post(
+      `${API}/api/employees/complete-profile`,
+      formToSend,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-      await axios.post(
-        `${API}/api/employees/complete-profile`,
-        formToSend,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const response = await axios.post(
-  `${API}/api/employees/complete-profile`,
-  formToSend,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    const data = response.data;
+
+    dispatch(
+      setUser({
+        isAuthenticated: true,
+        role: "Employee",
+        token,
+        profileCompleted: data.profileCompleted,
+        shifts: [],
+      })
+    );
+
+    navigate("/employee");
+  } catch (err) {
+    console.error(err);
   }
-);
-
-const data = response.data; // עכשיו יש לך את הנתונים מהשרת
-
-      dispatch(
-        setUser({
-          ...form,
-          isAuthenticated: true,
-          role: "Employee",
-          token,
-          shifts: [],
-    profileCompleted: data.profileCompleted,
-        })
-      );
-
-      navigate("/employee");
-    } catch (error: any) {
-      console.error(error.response?.data || error);
-    }
-  };
+};
 
   return (
     <div className="setup-container">

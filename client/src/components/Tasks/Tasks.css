@@ -1,0 +1,104 @@
+.task-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #f8fafc;
+  border-radius: 14px;
+  font-family: Arial;
+}
+
+h1 {
+  text-align: center;
+  color: #1e3a8a;
+}
+
+.form {
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+}
+
+/* chips */
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #e2e8f0;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.chip.selected {
+  background: #2563eb;
+  color: white;
+}
+
+/* table */
+.table {
+  width: 100%;
+  margin-top: 40px;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: #1e3a8a;
+  color: white;
+  padding: 12px;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+
+.mini {
+  font-size: 12px;
+  background: #eef2ff;
+  padding: 4px 6px;
+  margin: 2px 0;
+  border-radius: 6px;
+}
+
+.edit-btn {
+  background: #f59e0b;
+  border: none;
+  padding: 6px 10px;
+  color: white;
+  margin-right: 5px;
+  border-radius: 6px;
+}
+
+.delete-btn {
+  background: #ef4444;
+  border: none;
+  padding: 6px 10px;
+  color: white;
+  border-radius: 6px;
+}

@@ -6,7 +6,7 @@ using TaskManagement.modules;
 
 namespace TaskManagement.Controllers
 {
-[Authorize(Roles = "Manager")]
+// [Authorize(Roles = "Manager")]
     [ApiController]
     [Route("api/task")]
     public class TaskController : ControllerBase
@@ -47,80 +47,82 @@ namespace TaskManagement.Controllers
             return task;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<TaskManagement.modules.Task>> CreateTask(TaskDto taskDto)
-        {
-            try{
-            if (string.IsNullOrWhiteSpace(taskDto.Name))
-            {
-                return BadRequest("Name is required");
-            }
-
-            var task = new TaskManagement.modules.Task
-            {
-                Id = Guid.NewGuid(),
-                Name = taskDto.Name.Trim(),
-                Description = taskDto.Description?.Trim()
-            };
-
-            _context.Tasks.Add(task);
-
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(
-                nameof(GetTask),
-                new { id = task.Id },
-                task);
-        }
-        catch (Exception ex)
+       [HttpPost]
+public async Task<ActionResult<TaskManagement.modules.Task>> CreateTask(CreateTaskRequest request)
 {
-    return StatusCode(500, ex.Message);
+    if (string.IsNullOrWhiteSpace(request.Name))
+        return BadRequest("Name is required");
+
+    var shifts = await _context.Shifts
+        .Where(s => request.ShiftIds.Contains(s.Id))
+        .ToListAsync();
+
+    var specs = await _context.Specialization
+        .Where(s => request.SpecializationIds.Contains(s.Id))
+        .ToListAsync();
+
+    var task = new TaskManagement.modules.Task
+    {
+        Id = Guid.NewGuid(),
+        Name = request.Name.Trim(),
+        Description = request.Description?.Trim(),
+        Shifts = shifts,
+        Specializations = specs
+    };
+
+    _context.Tasks.Add(task);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
 }
-        }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTask(
-            Guid id,
-            TaskDto taskDto)
-        {
-            var task = await _context.Tasks.FindAsync(id);
+public async Task<IActionResult> UpdateTask(Guid id, CreateTaskRequest request)
+{
+    var task = await _context.Tasks
+        .Include(t => t.Shifts)
+        .Include(t => t.Specializations)
+        .FirstOrDefaultAsync(t => t.Id == id);
 
-            if (task == null)
-            {
-                return NotFound();
-            }
+    if (task == null)
+        return NotFound();
 
-            if (!string.IsNullOrWhiteSpace(taskDto.Name))
-            {
-                task.Name = taskDto.Name.Trim();
-            }
+    task.Name = request.Name;
+    task.Description = request.Description;
 
-            if (!string.IsNullOrWhiteSpace(taskDto.Description))
-            {
-                task.Description = taskDto.Description.Trim();
-            }
+    task.Shifts = await _context.Shifts
+        .Where(s => request.ShiftIds.Contains(s.Id))
+        .ToListAsync();
 
-            await _context.SaveChangesAsync();
+    task.Specializations = await _context.Specialization
+        .Where(s => request.SpecializationIds.Contains(s.Id))
+        .ToListAsync();
 
-            return NoContent();
-        }
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTask(Guid id)
-        {
-            var task = await _context.Tasks.FindAsync(id);
+public async Task<IActionResult> DeleteTask(Guid id)
+{
+    var task = await _context.Tasks
+        .Include(t => t.Shifts)
+        .Include(t => t.Specializations)
+        .FirstOrDefaultAsync(t => t.Id == id);
 
-            if (task == null)
-            {
-                return NotFound();
-            }
+    if (task == null)
+        return NotFound();
 
-            _context.Tasks.Remove(task);
+    task.Shifts.Clear();
+    task.Specializations.Clear();
 
-            await _context.SaveChangesAsync();
+    _context.Tasks.Remove(task);
 
-            return NoContent();
-        }
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
 
         private bool TaskExists(Guid id)
         {

@@ -20,26 +20,25 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 [HttpPost("login")]
+[AllowAnonymous]
 public IActionResult Login(LoginDto loginDto)
 {
     var user = _context.Users.FirstOrDefault(u => u.UserName == loginDto.UserName);
-    
-    if (user == null) return Unauthorized("User not found");
 
-    // בדיקה בסיסית של סיסמה (בהמשך אפשר להוסיף hashing)
-if (!BCrypt.Net.BCrypt.Verify(
-        loginDto.Password,
-        user.PasswordHash))
-{
-    return Unauthorized("Invalid password");
-}
-    // יצירת JWT
+    if (user == null)
+        return Unauthorized("User not found");
+
+    if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+        return Unauthorized("Invalid password");
+
+    var employeeExists = _context.Employees.Any(e => e.UserId == user.Id);
+
     var tokenHandler = new JwtSecurityTokenHandler();
     var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
 
     var tokenDescriptor = new SecurityTokenDescriptor
     {
-        Subject = new ClaimsIdentity(new []
+        Subject = new ClaimsIdentity(new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName),
@@ -58,8 +57,8 @@ if (!BCrypt.Net.BCrypt.Verify(
     return Ok(new
     {
         token = tokenHandler.WriteToken(token),
-        userId = user.Id,
-        role = user.Role
+        role = user.Role,
+        profileCompleted = employeeExists
     });
 }
     [HttpGet("users")]
