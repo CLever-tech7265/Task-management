@@ -11,8 +11,8 @@ services:
       - task_db
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__TaskDbContext: Server=task_db,1433;Database=TaskManagement;User Id=sa;Password=Chani7265!;TrustServerCertificate=True;
-      Jwt__Key: THIS_IS_MY_SECRET_KEY_AND_IT_NEEDS_TO_BE_LONG_ENOUGH_32_BYTES
+      ConnectionStrings__TaskDbContext: ${DB_CONNECTION}
+      Jwt__Key: ${JWT_KEY}
       Jwt__Issuer: TaskManagement
       Jwt__Audience: TaskManagementUsers
 
@@ -21,7 +21,7 @@ services:
     container_name: task_db
     environment:
       ACCEPT_EULA: Y
-      SA_PASSWORD: Chani7265!
+      SA_PASSWORD: ${SA_PASSWORD}
     ports:
       - "1435:1433"
     volumes:
@@ -34,7 +34,7 @@ services:
     depends_on:
       - server
     environment:
-      VITE_API_URL: http://localhost:8080
+      VITE_API_URL: ${VITE_API_URL}
 
 volumes:
   sql_data:

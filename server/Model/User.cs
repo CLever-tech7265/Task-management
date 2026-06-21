@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace TaskManagement.modules
 
 {
     public class User
     {
+        
         public Guid Id { get; set; }
         public string UserName { get; set; } = "";
         public string PasswordHash { get; set; } = "";
