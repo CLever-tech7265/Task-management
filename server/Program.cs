@@ -1,132 +1,108 @@
 using Microsoft.EntityFrameworkCore;
+using TaskManagement.modules;
 using TaskManagement.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -------------------- DB --------------------
+// Add services to the container.
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddDbContext<TaskDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("TaskDbContext")
-    )
-);
-
-// -------------------- Controllers --------------------
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TaskDbContext")));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// -------------------- Swagger + JWT Support --------------------
-builder.Services.AddSwaggerGen(c =>
+// builder.Services.AddOpenApi();
+
+// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddJwtBearer(options =>
+//     {
+//         options.TokenValidationParameters = new TokenValidationParameters
+//         {
+//             // Validate that the token is signed with the specified key
+//             ValidateIssuerSigningKey = true,
+//             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"])),
+
+//             // Disable issuer and audience validation for testing purposes
+//             ValidateIssuer = false,
+//             ValidateAudience = false
+//         };
+//     });
+builder.Services.AddAuthentication(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        Title = "TaskManagement API",
-        Version = "v1"
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
 
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter JWT token like: Bearer {your token}"
-    });
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(
+                builder.Configuration["Jwt:Key"]!
+            ))
+    };
 });
-
-// -------------------- JWT Authentication --------------------
-var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new Exception("Jwt Key is missing");
-
-var jwtIssuer = builder.Configuration["Jwt:Issuer"]
-    ?? throw new Exception("Jwt Issuer is missing");
-
-var jwtAudience = builder.Configuration["Jwt:Audience"]
-    ?? throw new Exception("Jwt Audience is missing");
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
-
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey)
-            )
-        };
-    });
-
-builder.Services.AddAuthorization();
-
-// -------------------- CORS --------------------
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("DefaultCors", policy =>
+    options.AddDefaultPolicy(policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:5175"
-            )
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            // .AllowAnyOrigin();
+            .WithOrigins( "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:5175");
     });
 });
+
+// builder.WebHost.UseUrls("http://+:8080");
 
 var app = builder.Build();
 
-// -------------------- DB Migration --------------------
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
-    db.Database.Migrate();
-}
+// using (var scope = app.Services.CreateAsyncScope())
+// {
+//     var db=scope.ServiceProvider.GetRequiredService<TaskDbContext>();
+//     db.Database.Migrate();
 
-// -------------------- Middleware Pipeline --------------------
+// }
+// if (app.Environment.IsDevelopment())
+// {
+//     app.MapOpenApi();
+// }
+
+// Configure the middleware pipeline.
 if (app.Environment.IsDevelopment())
+
+
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    app.UseSwaggerUI(c=>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskManagement API V1");
-        c.RoutePrefix = string.Empty;
+       c.RoutePrefix = string.Empty; 
     });
 }
-
 app.UseRouting();
-
-app.UseCors("DefaultCors");
+app.UseCors();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
+
 app.Run();
+
