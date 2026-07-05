@@ -4,6 +4,7 @@ using TaskManagement.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddDbContext<TaskDbContext>(options =>
@@ -47,6 +48,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-
+app.Urls.Add("http://0.0.0.0:5000");
 app.Run();
+
 
